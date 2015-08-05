@@ -4,7 +4,7 @@
 
 An Anki add-on that adds "fill in the blank"-style hints to cloze cards. For
 example, a cloze card with `{{c1:fill in the blanks}}` will become
-`{{c1:fill in the blanks::__ _ _ ___}`. It ignores clozes that already have
+`{{c1:fill in the blanks::__ _ _ ___}}`. It ignores clozes that already have
 a custom hint set.
 
 To run, select the "Add blanks to cloze notes" item under the Tools menu.
