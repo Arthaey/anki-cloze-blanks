@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 # See github page to report issues or to contribute:
 # https://github.com/Arthaey/anki-cloze-blanks
+#
+# Also available for Anki at https://ankiweb.net/shared/info/546020849
 
 import re
 from PyQt4.QtCore import SIGNAL
