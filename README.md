@@ -7,7 +7,9 @@ example, a cloze card with `{{c1:fill in the blanks}}` will become
 `{{c1:fill in the blanks::__ _ _ ___}}`. It ignores clozes that already have
 a custom hint set.
 
-To run, select the "Add blanks to cloze notes" item under the Tools menu.
+To run, select the "Add blanks to cloze notes" item under the Tools menu on the
+overview screen to apply it to all cards, or from the Edit menu in the browser
+to apply it only to selected cards.
 
 # Requirements
 

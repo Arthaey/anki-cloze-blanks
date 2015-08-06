@@ -8,7 +8,7 @@ import re
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtGui import QAction, QProgressDialog
 
-from anki.hooks import wrap
+from anki.hooks import addHook, wrap
 from aqt import mw
 from aqt.editor import Editor
 from aqt.utils import askUser, showInfo
@@ -16,27 +16,45 @@ from aqt.utils import askUser, showInfo
 FEATURES = {
     "forNewCards" : False, # TODO: not yet implemented
     "forExistingCards" : True,
+    "forSelectedCards" : True,
 }
+
+MENU_TEXT = _(u"Add blanks to cloze notes")
 
 # TODO: not yet implemented
 def addClozeBlanksToNewCards(self):
     pass
+
+def addClozeBlanksToSelectedCards(browser):
+    nids = browser.selectedNotes()
+    _addClozeBlanksToNotes(nids)
 
 def addClozeBlanksToExistingCards():
     if not askUser(_(u"Add blanks to all cloze cards?")):
         return
     cloze = mw.col.models.byName("Cloze")
     nids = mw.col.models.nids(cloze)
+    _addClozeBlanksToNotes(nids)
+
+def _addClozeBlanksToNotes(nids):
+    updatedCount = 0
+    mw.checkpoint(MENU_TEXT)
+    mw.progress.start()
+
     for nid in nids:
         note = mw.col.getNote(nid)
         text = note["Text"]
         # Only update clozes that do not already have hint text.
-        clozes = re.sub(r"{{c(\d+)::([^:]+?)}}", _addClozeBlanks, text)
+        clozes, num = re.subn(r"{{c(\d+)::([^:]+?)}}", _addClozeBlanksToText, text)
         note["Text"] = clozes
         note.flush()
-    showInfo(u"Updated {0} notes.".format(len(nids)))
+        updatedCount += num
 
-def _addClozeBlanks(match):
+    mw.progress.finish()
+    mw.reset()
+    showInfo(u"Updated {0} of {1} cloze notes.".format(updatedCount, len(nids)))
+
+def _addClozeBlanksToText(match):
     num = match.group(1)
     text = match.group(2)
     words = text.split(" ")
@@ -44,13 +62,22 @@ def _addClozeBlanks(match):
     # Need to escape curly-braces.
     return u"{{{{c{0}::{1}::{2}}}}}".format(num, text, blanks)
 
+def _setupBrowserMenu(browser):
+    a = QAction(MENU_TEXT, browser)
+    browser.connect(a, SIGNAL("triggered()"),
+        lambda b = browser: addClozeBlanksToSelectedCards(b))
+    browser.form.menuEdit.addSeparator()
+    browser.form.menuEdit.addAction(a)
+
 
 if FEATURES["forNewCards"]:
     Editor.onCloze = wrap(Editor.onCloze, addClozeBlanksToNewCards, "before")
 
 if FEATURES["forExistingCards"]:
-    add_nid = QAction(mw)
+    a = QAction(MENU_TEXT, mw)
+    mw.connect(a, SIGNAL("triggered()"), addClozeBlanksToExistingCards)
     mw.form.menuTools.addSeparator()
-    mw.form.menuTools.addAction(add_nid)
-    add_nid.setText(_(u"Add blanks to cloze notes"))
-    mw.connect(add_nid, SIGNAL("triggered()"), addClozeBlanksToExistingCards)
+    mw.form.menuTools.addAction(a)
+
+if FEATURES["forSelectedCards"]:
+    addHook("browser.setupMenus", _setupBrowserMenu)
