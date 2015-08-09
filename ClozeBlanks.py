@@ -43,6 +43,8 @@ def _addClozeBlanksToNotes(nids):
 
     for nid in nids:
         note = mw.col.getNote(nid)
+        if not "Text" in note:
+            continue
         text = note["Text"]
         # Only update clozes that do not already have hint text.
         clozes, num = re.subn(r"{{c(\d+)::([^:]+?)}}", _addClozeBlanksToText, text)
