@@ -19,7 +19,7 @@ file. Features are enabled (`True`) by default unless otherwise noted.
 
  * `forExistingCards`: adds a menu item to the Overview screen to update all existing cards
  * `forSelectedCards`: adds a menu item to the Browse screen to update all selected cards
- * `includeFirstLetter`: blanks will look like `{{c1::fill in the blanks::f__ i_ t__ b___}}` (`False` by default)
+ * `includeFirstLetter`: blanks will look like `{{c1::fill in the blanks::f__ i_ t__ b___}}` (disabled by default)
  * `nonBreakingSpaces`: keeps blanks on the same line when possible
 
 You must restart Anki after enabling or disabling any features.
