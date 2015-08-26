@@ -17,6 +17,7 @@ FEATURES = {
     "forNewCards" : False, # TODO: not yet implemented
     "forExistingCards" : True,
     "forSelectedCards" : True,
+    "nonBreakingSpaces" : True,
 }
 
 MENU_TEXT = _(u"Add blanks to cloze notes")
@@ -47,20 +48,26 @@ def _addClozeBlanksToNotes(nids):
             continue
         text = note["Text"]
         # Only update clozes that do not already have hint text.
-        clozes, num = re.subn(r"{{c(\d+)::([^:]+?)}}", _addClozeBlanksToText, text)
-        note["Text"] = clozes
+        text, num = re.subn(r"{{c(\d+)::([^:]+?)}}", _addClozeBlanksToText, text)
+        note["Text"] = text
         note.flush()
         updatedCount += num
 
     mw.progress.finish()
     mw.reset()
-    showInfo(u"Updated {0} of {1} cloze notes.".format(updatedCount, len(nids)))
+
+    spacesNotice = ""
+    if FEATURES["nonBreakingSpaces"]:
+        spacesNotice = " and replaced spaces inside clozes with non-breaking spaces"
+    showInfo(u"Updated {0} of {1} cloze notes{2}.".format(
+        updatedCount, len(nids), spacesNotice))
 
 def _addClozeBlanksToText(match):
     num = match.group(1)
     text = match.group(2)
     words = text.split(" ")
-    blanks = " ".join(["_" * max(1, len(word)/2) for word in words])
+    space = u"\u00a0" if FEATURES["nonBreakingSpaces"] else " "
+    blanks = space.join(["_" * max(1, len(word)/2) for word in words])
     # Need to escape curly-braces.
     return u"{{{{c{0}::{1}::{2}}}}}".format(num, text, blanks)
 
