@@ -59,7 +59,7 @@ def _addClozeBlanksToNotes(nids):
     spacesNotice = ""
     if FEATURES["nonBreakingSpaces"]:
         spacesNotice = " and replaced spaces inside clozes with non-breaking spaces"
-    showInfo(u"Updated {0} of {1} cloze notes{2}.".format(
+    showInfo(u"Updated {0} cards (from {1} cloze notes){2}.".format(
         updatedCount, len(nids), spacesNotice))
 
 def _addClozeBlanksToText(match):
