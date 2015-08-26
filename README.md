@@ -3,17 +3,26 @@
 **Anki download ID: `546020849`**
 
 An Anki add-on that adds "fill in the blank"-style hints to cloze cards. For
-example, a cloze card with `{{c1:fill in the blanks}}` will become
-`{{c1:fill in the blanks::__ _ _ ___}}`. It ignores clozes that already have
+example, a cloze card with `{{c1::fill in the blanks}}` will become
+`{{c1::fill in the blanks::__ _ _ ___}}`. It ignores clozes that already have
 a custom hint set.
 
 To run, select the "Add blanks to cloze notes" item under the Tools menu on the
 overview screen to apply it to all cards, or from the Edit menu in the browser
 to apply it only to selected cards.
 
-By default, it uses non-breaking spaces between blanks. If you want to use
-normal spaces instead, edit the code by changing `nonBreakingSpaces` to `False`
-in the `FEATURES` array at the top of the file.
+# Features
+
+To enable or disable features, edit the code by changing the appropriate values
+to `True` or `False` (as you want) in the `FEATURES` array at the top of the
+file. Features are enabled (`True`) by default unless otherwise noted.
+
+ * `forExistingCards`: adds a menu item to the Overview screen to update all existing cards
+ * `forSelectedCards`: adds a menu item to the Browse screen to update all selected cards
+ * `includeFirstLetter`: blanks will look like `{{c1::fill in the blanks::f__ i_ t__ b___}}` (`False` by default)
+ * `nonBreakingSpaces`: keeps blanks on the same line when possible
+
+You must restart Anki after enabling or disabling any features.
 
 # Requirements
 

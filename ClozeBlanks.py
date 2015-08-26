@@ -17,6 +17,7 @@ FEATURES = {
     "forNewCards" : False, # TODO: not yet implemented
     "forExistingCards" : True,
     "forSelectedCards" : True,
+    "includeFirstLetter" : False,
     "nonBreakingSpaces" : True,
 }
 
@@ -67,7 +68,12 @@ def _addClozeBlanksToText(match):
     text = match.group(3)
     words = text.split(" ")
     space = u"\u00a0" if FEATURES["nonBreakingSpaces"] else " "
-    blanks = space.join(["_" * max(1, len(word)/2) for word in words])
+
+    if FEATURES["includeFirstLetter"]:
+        blanks = space.join([word[0] + ("_" * max(1, len(word)/2)) for word in words])
+    else:
+        blanks = space.join(["_" * max(1, len(word)/2) for word in words])
+
     # Need to escape curly-braces.
     return u"{{{{c{0}::{1}::{2}}}}}".format(num, text, blanks)
 
