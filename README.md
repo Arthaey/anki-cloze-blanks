@@ -11,6 +11,10 @@ To run, select the "Add blanks to cloze notes" item under the Tools menu on the
 overview screen to apply it to all cards, or from the Edit menu in the browser
 to apply it only to selected cards.
 
+By default, it uses non-breaking spaces between blanks. If you want to use
+normal spaces instead, edit the code by changing `nonBreakingSpaces` to `False`
+in the `FEATURES` array at the top of the file.
+
 # Requirements
 
 This add-on assumes you have a "Cloze" note type.
