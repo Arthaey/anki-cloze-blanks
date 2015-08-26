@@ -48,7 +48,7 @@ def _addClozeBlanksToNotes(nids):
             continue
         text = note["Text"]
         # Only update clozes that do not already have hint text.
-        text, num = re.subn(r"{{c(\d+)::([^:]+?)}}", _addClozeBlanksToText, text)
+        text, num = re.subn(r"{{c(\d+)::(([^:]+?)(::[ _ ]+?)?)}}", _addClozeBlanksToText, text)
         note["Text"] = text
         note.flush()
         updatedCount += num
@@ -64,7 +64,7 @@ def _addClozeBlanksToNotes(nids):
 
 def _addClozeBlanksToText(match):
     num = match.group(1)
-    text = match.group(2)
+    text = match.group(3)
     words = text.split(" ")
     space = u"\u00a0" if FEATURES["nonBreakingSpaces"] else " "
     blanks = space.join(["_" * max(1, len(word)/2) for word in words])
