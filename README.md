@@ -19,6 +19,8 @@ file. Features are enabled (`True`) by default unless otherwise noted.
 
  * `forExistingCards`: adds a menu item to the Overview screen to update all existing cards
  * `forSelectedCards`: adds a menu item to the Browse screen to update all selected cards
+
+ * `clozeEachWord`: turn each words into a blanks (only if there are no clozes already)
  * `includeFirstLetter`: blanks will look like `{{c1::fill in the blanks::f__ i_ t__ b___}}` (disabled by default)
  * `nonBreakingSpaces`: keeps blanks on the same line when possible
 
