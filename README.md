@@ -28,7 +28,7 @@ You must restart Anki after enabling or disabling any features.
 
 # Requirements
 
-This add-on assumes you have a "Cloze" note type.
+This add-on assumes you have a "Cloze" note type. It only ever affects Cloze notes.
 
 # Support
 
