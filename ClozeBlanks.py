@@ -27,7 +27,6 @@ TEXT_FIELDS_SET = ["Text", "Front"]
 
 ADD_BLANKS_MENU_TEXT = _(u"Add blanks to cloze notes")
 CLOZE_WORDS_MENU_TEXT = _(u"Make each word into a cloze")
-TEXT_FIELDS_SET = ["Text", "Front"]
 
 def addClozeBlanksToNewCards(self):
     pass
