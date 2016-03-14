@@ -22,6 +22,7 @@ FEATURES = {
     "nonBreakingSpaces" : True,
 }
 
+BLANK = "_"
 TEXT_FIELDS_SET = ["Text", "Front"]
 
 ADD_BLANKS_MENU_TEXT = _(u"Add blanks to cloze notes")
@@ -54,8 +55,8 @@ def _forExistingCards(prompt, funcForExistingCards):
 def _addClozeBlanksToNotes(nids):
     def process(text):
         # Only update clozes that do not already have hint text.
-        return re.subn(r"{{c(\d+)::(([^:]+?)(::[ _ ]+?)?)}}",
-                _addClozeBlanksToTextMatch, text)
+        regex = r"{{c(\d+)::(([^:]+?)(::[ " + re.escape(BLANK) + r" ]+?)?)}}"
+        return re.subn(regex, _addClozeBlanksToTextMatch, text)
 
     _updateExistingCards(ADD_BLANKS_MENU_TEXT, nids, process)
 
@@ -69,9 +70,9 @@ def _addClozeBlanksToText(num, text):
     space = u"\u00a0" if FEATURES["nonBreakingSpaces"] else " "
 
     if FEATURES["includeFirstLetter"]:
-        blanks = space.join([word[0] + ("_" * max(1, len(word)/2)) for word in words])
+        blanks = space.join([word[0] + (BLANK * max(1, len(word)/2)) for word in words])
     else:
-        blanks = space.join(["_" * max(1, len(word)/2) for word in words])
+        blanks = space.join([BLANK * max(1, len(word)/2) for word in words])
 
     # Need to escape curly-braces.
     return u"{{{{c{0}::{1}::{2}}}}}".format(num, text, blanks)
