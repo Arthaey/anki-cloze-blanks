@@ -22,6 +22,8 @@ FEATURES = {
     "nonBreakingSpaces" : True,
 }
 
+TEXT_FIELDS_SET = ["Text", "Front"]
+
 ADD_BLANKS_MENU_TEXT = _(u"Add blanks to cloze notes")
 CLOZE_WORDS_MENU_TEXT = _(u"Make each word into a cloze")
 
@@ -95,13 +97,15 @@ def _updateExistingCards(checkpoint, nids, processFunc):
 
     for nid in nids:
         note = mw.col.getNote(nid)
-        if not "Text" in note:
+        text_fields = set(note.keys()).intersection(TEXT_FIELDS_SET)
+        if len(text_fields) == 0:
             continue
-        text = note["Text"]
+        text_field = text_fields.pop()
+        text = note[text_field]
 
         newText, num = processFunc(text)
         if text != newText:
-            note["Text"] = newText
+            note[text_field] = newText
             note.flush()
             updatedCount += num
 
