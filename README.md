@@ -23,6 +23,7 @@ file. Features are enabled (`True`) by default unless otherwise noted.
  * `clozeEachWord`: turn each words into a blanks (only if there are no clozes already)
  * `includeFirstLetter`: blanks will look like `{{c1::fill in the blanks::f__ i_ t__ b___}}` (disabled by default)
  * `nonBreakingSpaces`: keeps blanks on the same line when possible
+ * `BLANK`: use any character for "blanks" (defaults to underscore)
 
 You must restart Anki after enabling or disabling any features.
 
