@@ -49,6 +49,10 @@ def _forExistingCards(prompt, funcForExistingCards):
     if not askUser(_(prompt)):
         return
     cloze = mw.col.models.byName("Cloze")
+    if not cloze:
+        showInfo("Could not find the Cloze model.")
+        return
+
     nids = mw.col.models.nids(cloze)
     funcForExistingCards(nids)
 
