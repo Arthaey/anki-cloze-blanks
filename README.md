@@ -28,7 +28,7 @@ To enable or disable features, edit the code by changing the appropriate values
 to `True` or `False` (as you want) in the `FEATURES` list at the top of the
 file. Features are enabled (`True`) by default unless otherwise noted.
 
- - `onStartup` : Whether to run automatically every time you start Anki. [default: True]
+ - `onStartup` : Whether to run automatically every time you start Anki (as opposed to only when you manually select the menu option). [default: False]
 
  - `promptForConfirmation` : Whether you have to say 'yes' every time the add-on edits your cards. [default: True]
 

@@ -20,7 +20,7 @@ TEXT_FIELDS_SET = ["Text", "Front"]
 
 FEATURES = {
     # Whether to run automatically every time you start Anki.
-    "onStartup" : True,
+    "onStartup" : False,
 
     # Whether you have to say 'yes' every time the add-on edits your cards.
     "promptForConfirmation" : True,
