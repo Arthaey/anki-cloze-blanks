@@ -4,6 +4,51 @@
 #
 # Also available for Anki at https://ankiweb.net/shared/info/546020849
 
+################################################################################
+# USER SETTINGS AND PREFERENCES BELOW HERE, CUSTOMIZE AS YOU LIKE! :)
+################################################################################
+
+# The "blank" character that will replace cloze words.
+BLANK = "_"
+
+# If you have cloned the Cloze note type to make others, add them here.
+CLOZE_NOTE_TYPES = [ "Cloze" ]
+
+# Cloze note fields. The add-on will edit any field listed below.
+TEXT_FIELDS_SET = ["Text", "Front"]
+
+
+FEATURES = {
+    # Whether to run automatically every time you start Anki.
+    "onStartup" : True,
+
+    # Whether you have to say 'yes' every time the add-on edits your cards.
+    "promptForConfirmation" : True,
+
+    # Whether it tells you *every* time it runs, even if it modified no cards.
+    "notifyEvenAfterNoChanges" : True,
+
+    # Whether to add a menu item to the Overview screen to update all existing cards.
+    "forExistingCards" : True,
+
+    # Whether to add a menu item to the Browse screen to update all selected cards.
+    "forSelectedCards" : True,
+
+    # Whether to show the first letter as a hint (for example, "f__ i_ t__ b___").
+    "includeFirstLetter" : False,
+
+    # Whether to keep blanks on the same line when possible
+    "nonBreakingSpaces" : True,
+
+    # Whether to turn *each* word into a blank.
+    "clozeEachWord" : True,
+}
+
+
+################################################################################
+# DO NOT MODIFY BELOW THIS LINE (unless you know what you're doing)
+################################################################################
+
 import re
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtGui import QAction, QProgressDialog
@@ -13,48 +58,45 @@ from aqt import mw
 from aqt.editor import Editor
 from aqt.utils import askUser, showInfo
 
-FEATURES = {
-    "clozeEachWord" : True,
-    "forNewCards" : False, # TODO: not yet implemented
-    "forExistingCards" : True,
-    "forSelectedCards" : True,
-    "includeFirstLetter" : False,
-    "nonBreakingSpaces" : True,
-}
-
-BLANK = "_"
-TEXT_FIELDS_SET = ["Text", "Front"]
 
 ADD_BLANKS_MENU_TEXT = _(u"Add blanks to cloze notes")
 CLOZE_WORDS_MENU_TEXT = _(u"Make each word into a cloze")
 
-def addClozeBlanksToNewCards(self):
-    pass
 
 def addClozeBlanksToSelectedCards(browser):
     nids = browser.selectedNotes()
     _addClozeBlanksToNotes(nids)
 
+
 def clozeEachWordForSelectedCards(browser):
     nids = browser.selectedNotes()
     _clozeEachWord(nids)
 
+
 def addClozeBlanksToExistingCards():
     _forExistingCards(u"Add blanks to ALL cloze cards?", _addClozeBlanksToNotes)
+
 
 def clozeEachWordForExistingCards():
     _forExistingCards(u"Make each word into a cloze for ALL cards?", _clozeEachWord)
 
+
 def _forExistingCards(prompt, funcForExistingCards):
-    if not askUser(_(prompt)):
-        return
-    cloze = mw.col.models.byName("Cloze")
-    if not cloze:
-        showInfo("Could not find the Cloze model.")
+    if FEATURES["promptForConfirmation"] and not askUser(_(prompt)):
         return
 
-    nids = mw.col.models.nids(cloze)
-    funcForExistingCards(nids)
+    nids = []
+
+    for modelName in CLOZE_NOTE_TYPES:
+        model = mw.col.models.byName(modelName)
+        if model:
+            nids += mw.col.models.nids(model)
+        else:
+            showInfo("Could not find the model " + modelName)
+
+    if len(nids) > 0:
+        funcForExistingCards(nids)
+
 
 def _addClozeBlanksToNotes(nids):
     def process(text):
@@ -64,10 +106,12 @@ def _addClozeBlanksToNotes(nids):
 
     _updateExistingCards(ADD_BLANKS_MENU_TEXT, nids, process)
 
+
 def _addClozeBlanksToTextMatch(match):
     num = match.group(1)
     text = match.group(3)
     return _addClozeBlanksToText(num, text)
+
 
 def _addClozeBlanksToText(num, text):
     words = text.split(" ")
@@ -80,6 +124,7 @@ def _addClozeBlanksToText(num, text):
 
     # Need to escape curly-braces.
     return u"{{{{c{0}::{1}::{2}}}}}".format(num, text, blanks)
+
 
 def _clozeEachWord(nids):
     def process(text):
@@ -94,6 +139,7 @@ def _clozeEachWord(nids):
         return newText, num
 
     _updateExistingCards(CLOZE_WORDS_MENU_TEXT, nids, process)
+
 
 def _updateExistingCards(checkpoint, nids, processFunc):
     updatedCount = 0
@@ -120,8 +166,10 @@ def _updateExistingCards(checkpoint, nids, processFunc):
     spacesNotice = ""
     if FEATURES["nonBreakingSpaces"]:
         spacesNotice = " and replaced spaces inside clozes with non-breaking spaces"
-    showInfo(u"Updated {0} cards (from {1} cloze notes){2}.".format(
-        updatedCount, len(nids), spacesNotice))
+
+    if FEATURES["notifyEvenAfterNoChanges"] or updatedCount > 0:
+        showInfo(u"Updated {0} cards (from {1} cloze notes){2}.".format(
+            updatedCount, len(nids), spacesNotice))
 
 
 def _setupBrowserMenu(browser):
@@ -129,31 +177,32 @@ def _setupBrowserMenu(browser):
     browser.connect(addBlanks, SIGNAL("triggered()"),
         lambda b = browser: addClozeBlanksToSelectedCards(b))
 
-    clozeWords = QAction(CLOZE_WORDS_MENU_TEXT, browser)
-    browser.connect(clozeWords, SIGNAL("triggered()"),
-        lambda b = browser: clozeEachWordForSelectedCards(b))
-
     browser.form.menuEdit.addSeparator()
     browser.form.menuEdit.addAction(addBlanks)
+
     if FEATURES["clozeEachWord"]:
+        clozeWords = QAction(CLOZE_WORDS_MENU_TEXT, browser)
+        browser.connect(clozeWords, SIGNAL("triggered()"),
+            lambda b = browser: clozeEachWordForSelectedCards(b))
         browser.form.menuEdit.addAction(clozeWords)
 
 
-if FEATURES["forNewCards"]:
-    Editor.onCloze = wrap(Editor.onCloze, addClozeBlanksToNewCards, "before")
-    # TODO: support making each word into a cloze
+if FEATURES["onStartup"]:
+    addHook("profileLoaded", addClozeBlanksToExistingCards)
+
 
 if FEATURES["forExistingCards"]:
     addBlanks = QAction(ADD_BLANKS_MENU_TEXT, mw)
     mw.connect(addBlanks, SIGNAL("triggered()"), addClozeBlanksToExistingCards)
 
-    clozeWords = QAction(CLOZE_WORDS_MENU_TEXT, mw)
-    mw.connect(clozeWords, SIGNAL("triggered()"), clozeEachWordForExistingCards)
-
     mw.form.menuTools.addSeparator()
     mw.form.menuTools.addAction(addBlanks)
+
     if FEATURES["clozeEachWord"]:
+        clozeWords = QAction(CLOZE_WORDS_MENU_TEXT, mw)
+        mw.connect(clozeWords, SIGNAL("triggered()"), clozeEachWordForExistingCards)
         mw.form.menuTools.addAction(clozeWords)
+
 
 if FEATURES["forSelectedCards"]:
     addHook("browser.setupMenus", _setupBrowserMenu)
