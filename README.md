@@ -25,8 +25,7 @@ You must restart Anki after changing any settings.
 # Features
 
 To enable or disable features, edit the code by changing the appropriate values
-to `True` or `False` (as you want) in the `FEATURES` list at the top of the
-file. Features are enabled (`True`) by default unless otherwise noted.
+to `True` or `False` (as you want) in the `FEATURES` list at the top of the file.
 
  - `onStartup` : Whether to run automatically every time you start Anki (as opposed to only when you manually select the menu option). [default: False]
 
